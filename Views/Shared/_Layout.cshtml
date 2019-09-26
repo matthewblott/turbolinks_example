@@ -9,22 +9,34 @@
   <script>
 
     function sendForm(form) {
-      var xhr = new XMLHttpRequest();
-      var data = new FormData();
+      
+      try {
+        
+        let data = new FormData();
+  
+        [...form.elements].forEach((x) => data.append(x.name, x.value));
+  
+        fetch(form.action, {
+          method: form.method,
+          body: data
+        }).then((resp) => {
+        
+            window.Turbolinks.clearCache();
+            
+            const url = 'http://localhost:5000/Enquiry/Received';
 
-      [...form.elements].forEach((x) => data.append(x.name, x.value));
-
-      xhr.onload = (e) => {
-        window.Turbolinks.clearCache();
-        window.Turbolinks.visit(e.target.responseURL);
-      };
-
-      xhr.open(form.method, form.action);
-      xhr.send(data);
+            window.Turbolinks.visit(url);
+        
+        });
+        
+      } catch (error) {
+        console.error('Error:', error);
+      }
 
     }
 
-    window.onload = () => {
+    document.addEventListener('DOMContentLoaded', () => {
+      
       document.addEventListener("turbolinks:load", () => {
         document.querySelectorAll('form').forEach((el) => {
           el.onsubmit = (e) => {
@@ -34,8 +46,12 @@
 
         });
       });
-
-    };
+      
+    });
+    
+    // window.onload = () => {
+    //
+    // };
 
   </script>
 </head>
